@@ -32,8 +32,9 @@ public class MyTomcat {
                 MyRequest request = new MyRequest(inputStream);
                 MyResponse response = new MyResponse(outputStream);
 
-                this.dispatch(request, response);
-
+                if(!request.getUrl().equals("/favicon.ico")){
+                    this.dispatch(request, response);
+                }
                 socket.close();
             }
         } catch (IOException e) {
@@ -59,10 +60,14 @@ public class MyTomcat {
     public void dispatch(MyRequest request, MyResponse response){
         try {
             String clazz = urlServletMap.get(request.getUrl());
-            Class<MyServlet> myServletClass =  (Class<MyServlet>) Class.forName(clazz);
-            MyServlet myServlet = myServletClass.newInstance();
-            myServlet.doService(request, response);
-            System.out.println("dispatch...");
+            if(clazz != null){
+                Class<MyServlet> myServletClass =  (Class<MyServlet>) Class.forName(clazz);
+                MyServlet myServlet = myServletClass.newInstance();
+                myServlet.doService(request, response);
+            }else {
+                System.out.println(request.getUrl() + " not find clazz");
+            }
+
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
