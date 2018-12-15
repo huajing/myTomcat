@@ -62,6 +62,7 @@ public class MyTomcat {
             Class<MyServlet> myServletClass =  (Class<MyServlet>) Class.forName(clazz);
             MyServlet myServlet = myServletClass.newInstance();
             myServlet.doService(request, response);
+            System.out.println("dispatch...");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {

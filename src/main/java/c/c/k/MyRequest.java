@@ -9,8 +9,10 @@ public class MyRequest {
     private String url;
     private String method;
 
-    public MyRequest(InputStream inputStream) throws IOException{
-
+    public MyRequest(InputStream inputStream) throws IOException {
+        //通过输入流解析url和method
+        url = "/findGirl";
+        method = "GET";
     }
 
     public String getMethod() {

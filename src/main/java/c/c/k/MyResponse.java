@@ -11,6 +11,6 @@ public class MyResponse {
     }
 
     public void write(String content) throws IOException {
-//        outputStream.write(content.getBytes());
+        outputStream.write(content.getBytes());
     }
 }
