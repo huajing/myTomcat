@@ -1,4 +1,4 @@
-package c.c.k;
+package c.c.k.servlet;
 
 public abstract class MyServlet {
         public abstract void doGet(MyRequest request, MyResponse response);

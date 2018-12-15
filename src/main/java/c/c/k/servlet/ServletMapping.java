@@ -1,4 +1,4 @@
-package c.c.k;
+package c.c.k.servlet;
 
 public class ServletMapping {
     private String servletName;

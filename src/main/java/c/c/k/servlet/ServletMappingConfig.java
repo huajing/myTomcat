@@ -1,4 +1,6 @@
-package c.c.k;
+package c.c.k.servlet;
+
+import c.c.k.servlet.ServletMapping;
 
 import java.util.ArrayList;
 import java.util.List;

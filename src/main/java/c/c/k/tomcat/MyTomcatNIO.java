@@ -1,18 +1,16 @@
-package c.c.k;
+package c.c.k.tomcat;
+
+import c.c.k.servlet.MyRequest;
+import c.c.k.servlet.MyResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
-public class MyTomcat {
-    private int port;
-    private Map<String, String> urlServletMap = new HashMap<String, String>();
-
-    public MyTomcat(int port){
+public class MyTomcatNIO extends MyTomcat{
+    public MyTomcatNIO(int port){
         this.port = port;
     }
 
@@ -20,7 +18,6 @@ public class MyTomcat {
         this.initServletMapping();
 
         ServerSocket serverSocket = null;
-
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Mytomcat is start...");
@@ -51,29 +48,5 @@ public class MyTomcat {
 
     }
 
-    public void initServletMapping(){
-        for(ServletMapping servletMapping : ServletMappingConfig.servlectMappingList){
-            urlServletMap.put(servletMapping.getUrl(), servletMapping.getClazz());
-        }
-    }
 
-    public void dispatch(MyRequest request, MyResponse response){
-        try {
-            String clazz = urlServletMap.get(request.getUrl());
-            if(clazz != null){
-                Class<MyServlet> myServletClass =  (Class<MyServlet>) Class.forName(clazz);
-                MyServlet myServlet = myServletClass.newInstance();
-                myServlet.doService(request, response);
-            }else {
-                System.out.println(request.getUrl() + " not find clazz");
-            }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 }

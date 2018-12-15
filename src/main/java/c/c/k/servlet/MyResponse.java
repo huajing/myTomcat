@@ -1,4 +1,4 @@
-package c.c.k;
+package c.c.k.servlet;
 
 import java.io.IOException;
 import java.io.OutputStream;
