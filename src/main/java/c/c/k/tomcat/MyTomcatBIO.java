@@ -14,8 +14,8 @@ public class MyTomcatBIO extends MyTomcat{
         this.port = port;
     }
 
-    public void start(){
-        this.initServletMapping();
+    public void start()  throws Exception{
+        super.start();
 
         ServerSocket serverSocket = null;
         try {

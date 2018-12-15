@@ -14,7 +14,7 @@ public class MyTomcatAIO extends MyTomcat{
         this.port = port;
     }
 
-    public void start(){
+    public void start()  throws Exception{
         this.initServletMapping();
 
         ServerSocket serverSocket = null;

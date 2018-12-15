@@ -1,49 +1,77 @@
 package c.c.k.tomcat;
 
-import c.c.k.servlet.MyRequest;
-import c.c.k.servlet.MyResponse;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.Iterator;
+import java.util.Set;
 
 public class MyTomcatNIO extends MyTomcat{
     public MyTomcatNIO(int port){
         this.port = port;
     }
 
-    public void start(){
-        this.initServletMapping();
+    public void start() throws Exception{
+        super.start();
 
-        ServerSocket serverSocket = null;
         try {
-            serverSocket = new ServerSocket(port);
-            System.out.println("Mytomcat is start...");
-            while (true){
-                Socket socket = serverSocket.accept();
-                InputStream inputStream = socket.getInputStream();
-                OutputStream outputStream = socket.getOutputStream();
-
-                MyRequest request = new MyRequest(inputStream);
-                MyResponse response = new MyResponse(outputStream);
-
-                if(!request.getUrl().equals("/favicon.ico")){
-                    this.dispatch(request, response);
-                }
-                socket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }finally {
-            if(serverSocket != null){
+            ServerSocketChannel serverChannel = ServerSocketChannel.open();
+            serverChannel.configureBlocking(false);
+            ServerSocket ss = serverChannel.socket();
+            InetSocketAddress address = new InetSocketAddress(port);
+            ss.bind(address);                                            //1
+            Selector selector = Selector.open();                        //2
+            serverChannel.register(selector, SelectionKey.OP_ACCEPT);    //3
+            final ByteBuffer msg = ByteBuffer.wrap("Hi!\r\n".getBytes());
+            for (;;) {
                 try {
-                    serverSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    selector.select();                                    //4
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    // handle exception
+                    break;
+                }
+                Set<SelectionKey> readyKeys = selector.selectedKeys();    //5
+                Iterator<SelectionKey> iterator = readyKeys.iterator();
+                while (iterator.hasNext()) {
+                    SelectionKey key = iterator.next();
+                    iterator.remove();
+                    try {
+                        if (key.isAcceptable()) {                //6
+                            ServerSocketChannel server = (ServerSocketChannel)key.channel();
+                            SocketChannel client = server.accept();
+                            client.configureBlocking(false);
+                            client.register(selector, SelectionKey.OP_WRITE | SelectionKey.OP_READ, msg.duplicate());    //7
+                            System.out.println("Accepted connection from " + client);
+                        }
+                        if (key.isWritable()) {                //8
+                            SocketChannel client = (SocketChannel)key.channel();
+                            ByteBuffer buffer = (ByteBuffer)key.attachment();
+                            while (buffer.hasRemaining()) {
+                                if (client.write(buffer) == 0) {        //9
+                                    break;
+                                }
+                            }
+                            client.close();                    //10
+                        }
+                    } catch (IOException ex) {
+                        key.cancel();
+                        try {
+                            key.channel().close();
+                        } catch (IOException cex) {
+                            // 在关闭时忽略
+                        }
+                    }
                 }
             }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
 
     }

@@ -9,11 +9,14 @@ public abstract class MyTomcat {
     protected int port;
     private Map<String, String> urlServletMap = new HashMap<String, String>();
 
-    public abstract void start();
     public void initServletMapping(){
         for(ServletMapping servletMapping : ServletMappingConfig.servlectMappingList){
             urlServletMap.put(servletMapping.getUrl(), servletMapping.getClazz());
         }
+    }
+
+    public void start() throws Exception{
+        this.initServletMapping();
     }
 
     public void dispatch(MyRequest request, MyResponse response){

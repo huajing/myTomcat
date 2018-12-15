@@ -16,7 +16,7 @@ public class MyRequest {
         if((length = inputStream.read(httpRequestBytes)) > 0){
             httpRequest = new String(httpRequestBytes, 0, length);
         }
-        System.out.println(httpRequest);
+//        System.out.println(httpRequest);
         String httpHead = httpRequest.split("\n")[0];
         url = httpHead.split("\\s")[1];
         method = httpHead.split("\\s")[0];

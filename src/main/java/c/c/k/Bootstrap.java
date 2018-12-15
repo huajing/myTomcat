@@ -1,9 +1,13 @@
 package c.c.k;
 
-import c.c.k.tomcat.MyTomcatBIO;
+import c.c.k.tomcat.MyTomcatFactory;
 
 public class Bootstrap {
     public static void main(String[] args) {
-        new MyTomcatBIO(1234).start();
+        try {
+            MyTomcatFactory.getMyTomcat(1234).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
